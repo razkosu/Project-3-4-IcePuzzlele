@@ -62,3 +62,5 @@ func _unhandled_key_input(event: InputEvent) -> void:
 			load_level(0)
 		KEY_2:
 			load_level(1)
+		#KEY_3:
+			#load_level(2)
