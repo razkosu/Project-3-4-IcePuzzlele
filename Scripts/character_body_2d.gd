@@ -1,50 +1,57 @@
+class_name Player
 extends CharacterBody2D
+## The sliding character. It reads keys and animates slides; it knows no rules.
 
-const TILE_SIZE := 16
-const SLIDE_SPEED := 200.0
-const GRID_OFFSET := Vector2(TILE_SIZE, TILE_SIZE) / 2.0
+## Emitted when a direction key is pressed and the player can move.
+signal move_requested(direction: Vector2i)
+## Emitted when a slide animation has finished.
+signal slide_finished
 
-var slide_dir := Vector2.ZERO
-var start_position := Vector2.ZERO
+const SLIDE_SPEED := 240.0  # pixels per second
+const TILE_SIZE := 16.0
+
+## world.gd turns this off while a menu is open or a level is solved.
+var input_enabled := false
+var is_sliding := false
+
+var _tween: Tween
 
 
-func _ready() -> void:
-	global_position = _snap(global_position)
-	start_position = global_position
-
-func teleport(pos: Vector2) -> void:
-	slide_dir = Vector2.ZERO
-	global_position = pos
-	start_position = pos
-
-func _physics_process(delta: float) -> void:
-	if Input.is_action_just_pressed("restart"):
-		slide_dir = Vector2.ZERO
-		global_position = start_position
+func _unhandled_input(event: InputEvent) -> void:
+	if not input_enabled or is_sliding:
 		return
 
-	# Waiting for input: one press starts a slide
-	if slide_dir == Vector2.ZERO:
-		var dir := _read_direction()
-		if dir != Vector2.ZERO and not test_move(global_transform, dir * 2.0):
-			slide_dir = dir
-		return
+	var direction := Vector2i.ZERO
+	if event.is_action_pressed("up"):
+		direction = Vector2i.UP
+	elif event.is_action_pressed("down"):
+		direction = Vector2i.DOWN
+	elif event.is_action_pressed("left"):
+		direction = Vector2i.LEFT
+	elif event.is_action_pressed("right"):
+		direction = Vector2i.RIGHT
 
-	# Sliding: keep going until something blocks the player
-	var collision := move_and_collide(slide_dir * SLIDE_SPEED * delta)
-	if collision:
-		slide_dir = Vector2.ZERO
-		global_position = _snap(global_position)
-
-
-func _read_direction() -> Vector2:
-	if Input.is_action_just_pressed("up"): return Vector2.UP
-	if Input.is_action_just_pressed("down"): return Vector2.DOWN
-	if Input.is_action_just_pressed("left"): return Vector2.LEFT
-	if Input.is_action_just_pressed("right"): return Vector2.RIGHT
-	return Vector2.ZERO
+	if direction != Vector2i.ZERO:
+		move_requested.emit(direction)
 
 
-# Snap to the center of the nearest tile
-func _snap(pos: Vector2) -> Vector2:
-	return (pos - GRID_OFFSET).snapped(Vector2(TILE_SIZE, TILE_SIZE)) + GRID_OFFSET
+## Instantly puts the player somewhere and cancels any slide in progress.
+func place_at(world_position: Vector2) -> void:
+	if _tween:
+		_tween.kill()
+	is_sliding = false
+	global_position = world_position
+
+
+## Slides through a list of world positions, one tile after another.
+func slide_along(points: Array[Vector2]) -> void:
+	is_sliding = true
+	_tween = create_tween()
+	for point in points:
+		_tween.tween_property(self, "global_position", point, TILE_SIZE / SLIDE_SPEED)
+	_tween.finished.connect(_on_tween_finished)
+
+
+func _on_tween_finished() -> void:
+	is_sliding = false
+	slide_finished.emit()

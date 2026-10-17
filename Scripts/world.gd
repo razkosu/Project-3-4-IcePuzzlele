@@ -1,66 +1,70 @@
 extends Node2D
+## Game flow, first version: load one level and play it.
 
-const TILE := 16
+const LEVEL_PATH := "res://levels/level_01.tscn"
+const TILE_SIZE := 16
+const SCREEN_MARGIN := 70.0  # screen pixels kept free above and below the level
 
-@onready var levels: Array = [$Level1, $Level2]
-@onready var player = $Player
-@onready var camera: Camera2D = $Player/Camera2D
+@onready var _level_holder: Node2D = $LevelHolder
+@onready var _player: Player = $Player
+@onready var _camera: Camera2D = $Camera2D
 
-var goal_marker: ColorRect
+var _level: Level
+var _tiles := {}  # cell -> tile type, read from the level
+var _player_cell := Vector2i.ZERO
+var _goal_cell := Vector2i.ZERO
 
 
 func _ready() -> void:
-	# Gold square on the goal
-	goal_marker = ColorRect.new()
-	goal_marker.color = Color(1.0, 0.85, 0.2, 0.9)
-	goal_marker.size = Vector2(TILE - 4, TILE - 4)
-	goal_marker.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(goal_marker)
-	move_child(goal_marker, player.get_index())
+	_player.move_requested.connect(_on_player_move_requested)
+	_player.slide_finished.connect(_on_player_slide_finished)
 
-	# Controls text
-	var layer := CanvasLayer.new()
-	add_child(layer)
-	var hud := Label.new()
-	hud.text = "1: Basic    2: Hard    R: Reset"
-	hud.position = Vector2(12, 8)
-	hud.add_theme_font_size_override("font_size", 20)
-	layer.add_child(hud)
-
-	load_level(0)
+	_level = (load(LEVEL_PATH) as PackedScene).instantiate() as Level
+	_level_holder.add_child(_level)
+	_tiles = _level.get_tiles()
+	_goal_cell = _level.get_goal_cell()
+	_fit_camera()
+	_restart_level()
 
 
-func load_level(index: int) -> void:
-	for i in levels.size():
-		var on: bool = (i == index)
-		levels[i].visible = on
-		levels[i].enabled = on
-
-	var lvl: TileMapLayer = levels[index]
-	player.teleport(lvl.get_node("Start").global_position)
-	goal_marker.global_position = lvl.get_node("Goal").global_position - goal_marker.size / 2.0
-	_fit_camera(lvl)
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("restart"):
+		_restart_level()
 
 
-func _fit_camera(lvl: TileMapLayer) -> void:
-	var used := lvl.get_used_rect()
-	var pixel_pos := Vector2(used.position) * TILE
-	var pixel_size := Vector2(used.size) * TILE
+func _restart_level() -> void:
+	_player_cell = _level.get_start_cell()
+	_player.place_at(_cell_to_world(_player_cell))
+	_player.input_enabled = true
+
+
+func _on_player_move_requested(direction: Vector2i) -> void:
+	var path := IceRules.slide(_tiles, _player_cell, direction)
+	if path.is_empty():
+		return  # blocked: no move
+
+	_player_cell = path[-1]
+	var points: Array[Vector2] = []
+	for cell in path:
+		points.append(_cell_to_world(cell))
+	_player.slide_along(points)
+
+
+func _on_player_slide_finished() -> void:
+	if _player_cell == _goal_cell:
+		print("Solved!")
+
+
+func _cell_to_world(cell: Vector2i) -> Vector2:
+	return _level.to_global(_level.map_to_local(cell))
+
+
+## Zooms and centres the camera so the whole level fits on screen.
+func _fit_camera() -> void:
+	var used := _level.get_used_rect()
+	var level_size := Vector2(used.size) * TILE_SIZE
+	var level_center := Vector2(used.position) * TILE_SIZE + level_size / 2.0
 	var view := get_viewport_rect().size
-	camera.top_level = true                          # stop following the player
-	camera.global_position = pixel_pos + pixel_size / 2.0
-	var z := minf(view.x / pixel_size.x, view.y / pixel_size.y) * 0.9
-	camera.zoom = Vector2(z, z)
-
-
-func _unhandled_key_input(event: InputEvent) -> void:
-	var key := event as InputEventKey
-	if key == null or not key.pressed or key.echo:
-		return
-	match key.keycode:
-		KEY_1:
-			load_level(0)
-		KEY_2:
-			load_level(1)
-		#KEY_3:
-			#load_level(2)
+	var fit := minf(view.x / level_size.x, (view.y - SCREEN_MARGIN * 2.0) / level_size.y) * 0.96
+	_camera.zoom = Vector2(fit, fit)
+	_camera.position = level_center

@@ -1,7 +1,7 @@
 [gd_scene format=4 uid="uid://cmshud606wb6w"]
 
 [ext_resource type="TileSet" uid="uid://boohxfoc6vram" path="res://Assets/tileset.tres" id="1_mckh2"]
-[ext_resource type="Script" uid="uid://q285g3na3w5" path="res://level.gd" id="2_81a5f"]
+[ext_resource type="Script" uid="uid://q285g3na3w5" path="res://Scripts/level.gd" id="2_81a5f"]
 
 [node name="Level" type="TileMapLayer" unique_id=1182261593]
 texture_filter = 1
