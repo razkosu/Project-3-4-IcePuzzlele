@@ -12,13 +12,23 @@ const ARROWS := {
 	"arrow_left": Vector2i.LEFT,
 	"arrow_right": Vector2i.RIGHT,
 }
+const CURVES := {
+	"curve_up_right": [Vector2i.UP, Vector2i.RIGHT],
+	"curve_right_down": [Vector2i.RIGHT, Vector2i.DOWN],
+	"curve_down_left": [Vector2i.DOWN, Vector2i.LEFT],
+	"curve_left_up": [Vector2i.LEFT, Vector2i.UP],
+}
 
-## Returns every cell passed through, in order. The last one is where you stop.
-## An empty array means nothing happens.
 static func slide(tiles: Dictionary, from: Vector2i, direction: Vector2i) -> Array[Vector2i]:
 	var path: Array[Vector2i] = []
+
+	# Resting inside a bend: the only way out is through one of its openings.
+	var here: String = tiles.get(from, WALL)
+	if CURVES.has(here) and not (direction in CURVES[here]):
+		return path
+
 	var cell := from
-	var dir := direction  # arrows change this, so work on a copy
+	var dir := direction
 	var visited := {}  # (cell, direction) states already seen, to catch arrow loops
 
 	while true:
@@ -27,7 +37,14 @@ static func slide(tiles: Dictionary, from: Vector2i, direction: Vector2i) -> Arr
 		if kind == WALL:
 			break
 
-		if ARROWS.has(kind):
+		if CURVES.has(kind):
+			var openings: Array = CURVES[kind]
+			var entry_side: Vector2i = -dir
+			if not (entry_side in openings):
+				break  # a closed side of the bend: it blocks like a wall
+			var exit_dir: Vector2i = openings[1] if openings[0] == entry_side else openings[0]
+			dir = exit_dir
+		elif ARROWS.has(kind):
 			dir = ARROWS[kind]
 
 		cell = next
