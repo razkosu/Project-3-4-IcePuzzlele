@@ -1,14 +1,37 @@
 [gd_resource type="TileSet" format=3 uid="uid://boohxfoc6vram"]
 
-[ext_resource type="Texture2D" uid="uid://pawnj6gwi8br" path="res://Assets/tiles.png" id="1_2urvg"]
+[ext_resource type="Texture2D" uid="uid://ys0my3fybwm1" path="res://Assets/tiles_1.png" id="1_eirx2"]
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_aqk2v"]
-texture = ExtResource("1_2urvg")
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ihwer"]
+texture = ExtResource("1_eirx2")
 0:0/0 = 0
 0:0/0/custom_data_0 = "ice"
 1:0/0 = 0
-1:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 1:0/0/custom_data_0 = "wall"
+2:0/0 = 0
+2:0/0/custom_data_0 = "arrow_up"
+3:0/0 = 0
+3:0/0/custom_data_0 = "arrow_down"
+4:0/0 = 0
+4:0/0/custom_data_0 = "arrow_left"
+5:0/0 = 0
+5:0/0/custom_data_0 = "arrow_right"
+6:0/0 = 0
+6:0/0/custom_data_0 = "curve_up_right"
+7:0/0 = 0
+7:0/0/custom_data_0 = "curve_right_down"
+8:0/0 = 0
+8:0/0/custom_data_0 = "curve_down_left"
+9:0/0 = 0
+9:0/0/custom_data_0 = "curve_left_up"
+0:1/0 = 0
+0:1/0/custom_data_0 = "wall"
+1:1/0 = 0
+1:1/0/custom_data_0 = "wall"
+2:1/0 = 0
+2:1/0/custom_data_0 = "wall"
+3:1/0 = 0
+3:1/0/custom_data_0 = "ice"
 
 [resource]
 physics_layer_0/collision_layer = 1
@@ -16,4 +39,4 @@ physics_layer_0/collision_mask = 0
 physics_layer_0/collision_priority = 0.0
 custom_data_layer_0/name = "tile_type"
 custom_data_layer_0/type = 4
-sources/0 = SubResource("TileSetAtlasSource_aqk2v")
+sources/2 = SubResource("TileSetAtlasSource_ihwer")
