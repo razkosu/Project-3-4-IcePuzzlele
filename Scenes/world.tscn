@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://b6mmqbf8o03vp"]
 
 [ext_resource type="Script" uid="uid://drt71vl7vafho" path="res://Scripts/world.gd" id="1_aqk2v"]
-[ext_resource type="Texture2D" uid="uid://cyn0hmmes3lo7" path="res://Assets/icon.svg" id="1_f3sb7"]
 [ext_resource type="Script" uid="uid://dqkwpcujkyelo" path="res://Scripts/character_body_2d.gd" id="1_fj7yv"]
+[ext_resource type="Texture2D" uid="uid://cihyeosw56egr" path="res://Assets/player_sprite.png" id="3_5a7ea"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_lkbbt"]
 size = Vector2(14, 14)
@@ -23,7 +23,6 @@ script = ExtResource("1_fj7yv")
 shape = SubResource("RectangleShape2D_lkbbt")
 
 [node name="Sprite2D" type="Sprite2D" parent="Player" unique_id=649199645]
-scale = Vector2(0.125, 0.125)
-texture = ExtResource("1_f3sb7")
+texture = ExtResource("3_5a7ea")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=642289026]

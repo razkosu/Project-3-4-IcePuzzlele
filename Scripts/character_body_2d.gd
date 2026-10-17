@@ -1,21 +1,17 @@
 class_name Player
 extends CharacterBody2D
-## The sliding character. It reads keys and animates slides; it knows no rules.
 
-## Emitted when a direction key is pressed and the player can move.
 signal move_requested(direction: Vector2i)
-## Emitted when a slide animation has finished.
 signal slide_finished
 
 const SLIDE_SPEED := 240.0  # pixels per second
 const TILE_SIZE := 16.0
 
-## world.gd turns this off while a menu is open or a level is solved.
+## world.gd turns this off while a menu is open or a level is solved
 var input_enabled := false
 var is_sliding := false
 
-var _tween: Tween
-
+var _tween: Tween  # animations and such
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not input_enabled or is_sliding:
@@ -35,7 +31,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		move_requested.emit(direction)
 
 
-## Instantly puts the player somewhere and cancels any slide in progress.
+## Instantly puts the player somewhere and cancels any slide in progress
 func place_at(world_position: Vector2) -> void:
 	if _tween:
 		_tween.kill()
@@ -43,7 +39,7 @@ func place_at(world_position: Vector2) -> void:
 	global_position = world_position
 
 
-## Slides through a list of world positions, one tile after another.
+## Slides through a list of world positions
 func slide_along(points: Array[Vector2]) -> void:
 	is_sliding = true
 	_tween = create_tween()

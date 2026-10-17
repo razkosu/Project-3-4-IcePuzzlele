@@ -1,8 +1,8 @@
 class_name IceRules
 extends RefCounted
-## The rules of the ice puzzle. No nodes, no visuals.
-## A level is a Dictionary: cell (Vector2i) -> tile type (String).
-## A cell that is missing from the Dictionary counts as a wall.
+## The rules of the ice puzzle
+## A level is a Dictionary: cell (Vector2i) -> tile type (String)
+## A cell that is missing from the Dictionary counts as a wall
 
 const WALL := "wall"
 const DIRECTIONS := [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]

@@ -12,7 +12,7 @@ var _buttons: Array[Button] = []
 
 
 func _init() -> void:
-	layer = 10  # draw above the HUD
+	layer = 10  # draw above the hud
 
 
 func _ready() -> void:
