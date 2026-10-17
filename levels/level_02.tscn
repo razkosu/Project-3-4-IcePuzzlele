@@ -9,7 +9,7 @@ tile_map_data = PackedByteArray("AAAAAAAAAgAAAAEAAAAAAAEAAgAAAAEAAAAAAAIAAgAAAAE
 tile_set = ExtResource("1_g685p")
 script = ExtResource("2_8yqd8")
 level_name = "Arrows"
-hint = "Arrow tiles"
+hint = "Arrow tiles make you move in that direction."
 
 [node name="Start" type="Marker2D" parent="." unique_id=318395060]
 position = Vector2(24, 24)

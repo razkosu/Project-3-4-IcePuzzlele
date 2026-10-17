@@ -9,7 +9,7 @@ tile_map_data = PackedByteArray("AAAAAAAAAgAAAAEAAAAAAAEAAgAAAAEAAAAAAAIAAgAAAAE
 tile_set = ExtResource("1_4rvgf")
 script = ExtResource("2_hd1bg")
 level_name = "Expert"
-hint = "Bigger"
+hint = "Careful you can get softlocked. Good Luck!"
 
 [node name="Start" type="Marker2D" parent="." unique_id=394228580]
 position = Vector2(40, 56)

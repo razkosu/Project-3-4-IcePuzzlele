@@ -9,7 +9,7 @@ tile_map_data = PackedByteArray("AAAAAAAAAgAAAAEAAAAAAAEAAgAAAAEAAAAAAAIAAgAAAAE
 tile_set = ExtResource("1_lear0")
 script = ExtResource("2_85vqe")
 level_name = "Curves"
-hint = "Curve tiles"
+hint = "Curve tiles make the player turn in the direction they face."
 
 [node name="Start" type="Marker2D" parent="." unique_id=1876345699]
 position = Vector2(88, 88)

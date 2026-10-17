@@ -9,7 +9,7 @@ tile_map_data = PackedByteArray("AAAAAAAAAgAAAAEAAAAAAAEAAgAAAAEAAAAAAAIAAgAAAAE
 tile_set = ExtResource("1_fl8gq")
 script = ExtResource("2_07l6b")
 level_name = "Hard"
-hint = "Big"
+hint = "Some extra difficulty."
 
 [node name="Start" type="Marker2D" parent="." unique_id=2145495013]
 position = Vector2(104, 104)

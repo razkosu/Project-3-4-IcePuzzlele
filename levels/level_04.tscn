@@ -9,7 +9,7 @@ tile_map_data = PackedByteArray("AAAAAAAAAgAAAAEAAAAAAAEAAgAAAAEAAAAAAAIAAgAAAAE
 tile_set = ExtResource("1_fdgl0")
 script = ExtResource("2_hgv6m")
 level_name = "Mixed"
-hint = "Both"
+hint = "Combination of both arrow tiles and curved tiles."
 
 [node name="Start" type="Marker2D" parent="." unique_id=2008669033]
 position = Vector2(168, 104)

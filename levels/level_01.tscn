@@ -9,7 +9,7 @@ tile_map_data = PackedByteArray("AAAAAAAAAgAAAAEAAAAAAAEAAgAAAAEAAAAAAAIAAgAAAAE
 tile_set = ExtResource("1_mckh2")
 script = ExtResource("2_81a5f")
 level_name = "Basic"
-hint = "Slide"
+hint = "Use W A S D to move. Blue is the start and Orange is the goal. You have to stand on the goal to win."
 
 [node name="Start" type="Marker2D" parent="." unique_id=1587851809]
 position = Vector2(40, 56)
