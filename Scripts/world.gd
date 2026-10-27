@@ -25,6 +25,8 @@ enum State { MENU, PLAYING, SOLVED }
 var _hud: Hud
 var _menu: LevelSelect
 
+var _generator := IceMapGenerator.new()  # makes the "Random" level
+
 var _scenes: Array[PackedScene] = []
 var _names: Array[String] = []
 var _completed: Array[bool] = []
@@ -66,7 +68,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	# Number keys jump straight to a level
 	if event is InputEventKey and event.pressed and not event.echo:
 		var number: int = event.keycode - KEY_1
-		if number >= 0 and number < _scenes.size():
+		if number >= 0 and number <= _scenes.size():  # one past the last level = Random
 			_start_level(number)
 			return
 
@@ -78,7 +80,9 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("ui_cancel"):
 		_open_menu()
 	elif event.is_action_pressed("ui_accept") and _state == State.SOLVED:
-		if _level_index + 1 < _scenes.size():
+		if _is_random_level():
+			_start_level(_level_index)  # a fresh random map
+		elif _level_index + 1 < _scenes.size():
 			_start_level(_level_index + 1)
 		else:
 			_open_menu()
@@ -87,7 +91,12 @@ func _open_menu() -> void:
 	_state = State.MENU
 	_player.input_enabled = false
 	_hud.visible = false
-	_menu.populate(_names, _completed)
+	# Add a "Random" button after the hand-made levels.
+	var names := _names.duplicate()
+	names.append("Random")
+	var completed := _completed.duplicate()
+	completed.append(false)
+	_menu.populate(names, completed)
 	_menu.open()
 
 
@@ -98,7 +107,13 @@ func _start_level(index: int) -> void:
 		_level.queue_free()
 
 	_level_index = index
-	_level = _scenes[index].instantiate() as Level
+	if _is_random_level():
+		_level = _generator.generate()
+		if _level == null:
+			_open_menu()  # the cave was too small for a start and goal; very unlikely
+			return
+	else:
+		_level = _scenes[index].instantiate() as Level
 	_level_holder.add_child(_level)
 	_tiles = _level.get_tiles()
 	_goal_cell = _level.get_goal_cell()
@@ -120,6 +135,9 @@ func _restart_level() -> void:
 func _on_solved() -> void:
 	_state = State.SOLVED
 	_player.input_enabled = false
+	if _is_random_level():
+		_hud.show_solved("Solved!   Enter: another random puzzle")
+		return
 	_completed[_level_index] = true
 	_save_progress()
 	if _level_index + 1 < _scenes.size():
@@ -150,6 +168,11 @@ func _on_player_slide_finished() -> void:
 
 
 # --- Helpers ---
+
+## The Random level uses the index right after the last hand-made level.
+func _is_random_level() -> bool:
+	return _level_index == _scenes.size()
+
 
 func _cell_to_world(cell: Vector2i) -> Vector2:
 	return _level.to_global(_level.map_to_local(cell))
