@@ -16,6 +16,9 @@ const TILE_SIZE := 16
 const SCREEN_MARGIN := 70.0  # screen pixels kept free above and below the level for text
 const SAVE_PATH := "user://progress.cfg"
 
+const BUMP_SOUND := preload("res://Assets/Audio/bump.mp3")
+const SOLVED_SOUND := preload("res://Assets/Audio/level_complete.mp3")
+
 enum State { MENU, PLAYING, SOLVED }
 
 @onready var _level_holder: Node2D = $LevelHolder
@@ -24,6 +27,8 @@ enum State { MENU, PLAYING, SOLVED }
 
 var _hud: Hud
 var _menu: LevelSelect
+var _bump_player: AudioStreamPlayer    # plays when a move is blocked
+var _solved_player: AudioStreamPlayer  # plays when the goal is reached
 
 var _generator := IceMapGenerator.new()  # makes the "Random" level
 
@@ -55,6 +60,8 @@ func _ready() -> void:
 	add_child(_hud)
 	_menu = LevelSelect.new()
 	add_child(_menu)
+	_bump_player = _make_sound_player(BUMP_SOUND)
+	_solved_player = _make_sound_player(SOLVED_SOUND)
 
 	_menu.level_chosen.connect(_start_level)
 	_player.move_requested.connect(_on_player_move_requested)
@@ -128,6 +135,7 @@ func _restart_level() -> void:
 	_player_cell = _level.get_start_cell()
 	_player.place_at(_cell_to_world(_player_cell))
 	_player.input_enabled = true
+	_solved_player.stop()  # cut the jingle off if a new attempt starts
 	_hud.hide_solved()
 	_state = State.PLAYING
 
@@ -135,6 +143,7 @@ func _restart_level() -> void:
 func _on_solved() -> void:
 	_state = State.SOLVED
 	_player.input_enabled = false
+	_solved_player.play()
 	if _is_random_level():
 		_hud.show_solved("Solved!   Enter: another random puzzle")
 		return
@@ -153,7 +162,8 @@ func _on_player_move_requested(direction: Vector2i) -> void:
 		return
 	var path := IceRules.slide(_tiles, _player_cell, direction)
 	if path.is_empty():
-		return  # blocked: no move
+		_bump_player.play()  # blocked: no move, so play the bump
+		return
 
 	_player_cell = path[-1]
 	var points: Array[Vector2] = []
@@ -172,6 +182,14 @@ func _on_player_slide_finished() -> void:
 ## The Random level uses the index right after the last hand-made level.
 func _is_random_level() -> bool:
 	return _level_index == _scenes.size()
+
+
+## Makes an AudioStreamPlayer for one sound and adds it to the scene.
+func _make_sound_player(sound: AudioStream) -> AudioStreamPlayer:
+	var sound_player := AudioStreamPlayer.new()
+	sound_player.stream = sound
+	add_child(sound_player)
+	return sound_player
 
 
 func _cell_to_world(cell: Vector2i) -> Vector2:
