@@ -54,7 +54,7 @@
 
 ## Coursework Submission Links
 - **Presentation Slides:** [Link to Presentation Slides](https://docs.google.com/presentation/d/1FhhqBA2fAMmGW85q5-vOEg4ZhSr5X9AuTbPUya6jDGA/edit?usp=sharing) (Include the detailed personal reflection here)
-- **Gameplay Video:** [Link to YouTube / Video File](https://www.youtube.com/watch?v=???)
+- **Gameplay Video:** [Link to YouTube / Video File](https://drive.google.com/file/d/1WYfWjV6h0lpMR9O2B3z6pKGI6fP77esZ/view?usp=sharing)
 - **Game Design Document (GDD):** [Link to Latest GDD Document](https://docs.google.com/document/d/17vqtMnOq4eQ8XGcXHhlT8I9kjrhtXhrKqjNO_MVSxpE/edit?usp=sharing) (All changes is shown in different color)
 
 ---
